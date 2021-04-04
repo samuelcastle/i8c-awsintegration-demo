@@ -1,0 +1,230 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Parameters:
+
+    MailchimpMembersUrl:
+        Type: String
+        Default: https://us14.api.mailchimp.com/3.0/lists/230948/members
+    MailchimpApiPassword:
+        Type: String
+        Default: e7beba7da55245d6da87a7a4752ae7f8-us14
+    MSTeamsWebhookUrl:
+        Type: String
+        Default: https://cronos.webhook.office.com/webhookb2/6991badf-a59b-4834-a02c-392c8ccd775b@49c3d703-3579-47bf-a888-7c913fbdced9/IncomingWebhook/efe67ef287234dc4ad5eef007d191e5e/f326b0c8-0111-4e5b-b938-f04a00f85e82
+
+    SalesforceOauthUrl:
+        Type: String
+        Default: https://login.salesforce.com/services/oauth2/token
+    SalesforceOauthClientId:
+        Type: String
+        Default: 3MVG9SOw8KERNN09K3JOTP.qvVTHfE9EOzR12A2CDT8Pqb73gN_0mqORuESpYHomqIhNxAw9kIBonNM8w2PXK
+    SalesforceOauthClientSecret:
+        Type: String
+        Default: D3303156E45B2E42CDA7A6DC7C82B7335D4E9A842E94B306A05BDB5AC475CC94
+    SalesforceUsername:
+        Type: String
+        Default: vandecasteele.samuel@gmail.com
+    SalesforcePassword:
+        Type: String
+        Default: r9O8H#qX9BmNe^u
+    SalesforceUrl:
+        Type: String
+        Default: https://i8c2-dev-ed.my.salesforce.com/services/data/v50.0/sobjects/Contact/
+    
+    CustomerEventBusName:
+        Type: String
+        Default: i8c-wickey-customers
+
+
+Resources:  
+
+    # EventBridge Connections
+    I8cMailchimpConnection:
+        Type: AWS::Events::Connection
+        Properties:
+            AuthorizationType: BASIC
+            AuthParameters:
+                BasicAuthParameters:
+                    Username: "anystring"
+                    Password: !Ref MailchimpApiPassword
+    I8cMsteamsConnection:
+        Type: AWS::Events::Connection
+        Properties:
+            AuthorizationType: API_KEY
+            AuthParameters:
+                ApiKeyAuthParameters:
+                    ApiKeyName: no_auth_needed
+                    ApiKeyValue: no_auth_needed
+
+    I8cSalesforceConnection:
+        Type: AWS::Events::Connection
+        Properties: 
+            AuthorizationType: OAUTH_CLIENT_CREDENTIALS
+            AuthParameters:
+                OAuthParameters:
+                    AuthorizationEndpoint: !Ref SalesforceOauthUrl
+                    ClientParameters: 
+                        ClientID: !Ref SalesforceOauthClientId
+                        ClientSecret: !Ref SalesforceOauthClientSecret
+                    HttpMethod: POST
+                    OAuthHttpParameters: 
+                        BodyParameters: 
+                            -   IsValueSecret: false
+                                Key: grant_type
+                                Value: password
+                            -   IsValueSecret: false
+                                Key: username
+                                Value: !Ref SalesforceUsername
+                            -   IsValueSecret: true
+                                Key: password
+                                Value: !Ref SalesforcePassword
+    
+    # EventBridge API Destinations
+    I8cMailchimpApiDestination:
+        Type: AWS::Events::ApiDestination
+        Properties:
+        Properties:
+            ConnectionArn: !GetAtt 'I8cMailchimpConnection.Arn'
+            InvocationEndpoint: !Ref MailchimpMembersUrl
+            HttpMethod: POST
+            InvocationRateLimitPerSecond: 10
+
+    I8cMSTeamsApiDestination:
+        Type: AWS::Events::ApiDestination
+        Properties:
+            ConnectionArn: !GetAtt 'I8cMsteamsConnection.Arn'
+            InvocationEndpoint: !Ref MSTeamsWebhookUrl
+            HttpMethod: POST
+            InvocationRateLimitPerSecond: 5
+    
+    I8cSalesforceApiDestination:
+        Type: AWS::Events::ApiDestination
+        Properties:
+            ConnectionArn: !GetAtt 'I8cSalesforceConnection.Arn'
+            InvocationEndpoint: !Ref SalesforceUrl
+            HttpMethod: POST
+            InvocationRateLimitPerSecond: 5
+    
+    # EventBridge Delivery Rule (with 2 targets)
+    I8cHandleNewCustomerDeliveryRule:
+        Type: AWS::Events::Rule
+        Properties:
+            EventBusName: !Ref CustomerEventBusName
+            EventPattern:
+                source:
+                    - "magento.customers"
+            State: "ENABLED"
+            Targets:
+                -
+                    Id: mailchimp-target
+                    Arn: !GetAtt I8cMailchimpApiDestination.Arn
+                    RoleArn: !GetAtt I8cHandleNewCustomerDeliveryTargetRole.Arn
+                    InputTransformer:
+                        InputPathsMap:
+                            email: $.detail.email
+                            firstname: $.detail.firstname
+                            lastname: $.detail.lastname
+                        InputTemplate: >
+                            {
+                                "email_address": <email>,
+                                "email_type": "html",
+                                "status": "subscribed",
+                                "merge_fields": {
+                                    "FNAME": <firstname>,
+                                    "LNAME": <lastname>
+                                },
+                                "tags": [ "demo-eventbridge"]
+                            }
+                -
+                    Id: msteams-target
+                    Arn: !GetAtt I8cMSTeamsApiDestination.Arn
+                    RoleArn: !GetAtt I8cHandleNewCustomerDeliveryTargetRole.Arn
+                    InputTransformer:
+                        InputPathsMap:
+                            email: $.detail.email
+                            firstname: $.detail.firstname
+                            lastname: $.detail.lastname
+                            createdat: $.detail.created_at
+                        InputTemplate: >
+                            {
+                                "@type": "MessageCard",
+                                "@context": "http://schema.org/extensions",
+                                "themeColor": "EA6518",
+                                "summary": "New customer on Magento",
+                                "sections": [
+                                    {
+                                    "activityTitle": "New customer registerd on Magento 🚀 ",
+                                    "activitySubtitle": "Amazon Eventbridge demo",
+                                    "facts": [
+                                    {
+                                        "name": "Firstname",
+                                        "value": <firstname>
+                                    }, {
+                                        "name": "Lastname",
+                                        "value": <lastname>
+                                    }, {
+                                        "name": "Email",
+                                        "value": <email>
+                                    },
+                                    {
+                                        "name": "Created at",
+                                        "value": <createdat>
+                                    }],
+                                    "markdown": true
+                                }],
+                                "potentialAction": [
+                                    {
+                                    "@type": "OpenUri",
+                                    "name": "View in Magento",
+                                    "targets": [{
+                                        "os": "default",
+                                        "uri": "https://docs.microsoft.com/outlook/actionable-messages"
+                                    }]
+                                }]
+                            }
+                -
+                    Id: salesforce-target
+                    Arn: !GetAtt I8cSalesforceApiDestination.Arn
+                    RoleArn: !GetAtt I8cHandleNewCustomerDeliveryTargetRole.Arn
+                    InputTransformer:
+                        InputPathsMap:
+                            email: $.detail.email
+                            firstname: $.detail.firstname
+                            lastname: $.detail.lastname
+                            magentoId: $.detail.id
+                        InputTemplate: >
+                            {
+                                "LastName": <lastname>,
+                                "FirstName": <firstname>,
+                                "Email": <email>,
+                                "Source_System__c": "Magento",
+                                "magentoId__c": <magentoId>
+                            }
+    
+    # IAM Role
+    I8cHandleNewCustomerDeliveryTargetRole:
+        Type: AWS::IAM::Role
+        Properties: 
+            AssumeRolePolicyDocument:
+                Version: "2012-10-17"
+                Statement:
+                    - 
+                        Effect: Allow
+                        Principal:
+                            Service:
+                                - events.amazonaws.com
+                        Action:
+                            - 'sts:AssumeRole'
+            Policies:
+                -   PolicyName: root
+                    PolicyDocument:
+                        Version: "2012-10-17"
+                        Statement:
+                            - 
+                                Effect: Allow
+                                Action: 'events:InvokeApiDestination'
+                                Resource:
+                                    - !GetAtt I8cMailchimpApiDestination.Arn
+                                    - !GetAtt I8cMSTeamsApiDestination.Arn
+                                    - !GetAtt I8cSalesforceApiDestination.Arn
+
