@@ -3,16 +3,11 @@ import { EventBridgeClient, PutEventsCommand } from "@aws-sdk/client-eventbridge
 
 import axios from "axios";
 import followup from "/opt/nodejs/followup";
+import { IProductAvailabilityEvent} from "/opt/nodejs/acmeEventInterfaces"
 
 const eventbridge = new EventBridgeClient({ })
 
-interface IProductAvailability {
-  product: string;
-  available: boolean;
-  message?: string; 
-}
-
-export const lambdaHandler: EventBridgeHandler<'aws.events', {}, IProductAvailability> = async (event) => {
+export const lambdaHandler: EventBridgeHandler<'aws.events', {}, IProductAvailabilityEvent> = async (event) => {
   try {
     await followup.updateFup({});
     const res = await retrieveAvailabily( "ok")
@@ -30,7 +25,7 @@ export const lambdaHandler: EventBridgeHandler<'aws.events', {}, IProductAvailab
 
 }
 
-async function retrieveAvailabily( params:string ): Promise<IProductAvailability> {
+async function retrieveAvailabily( params:string ): Promise<IProductAvailabilityEvent> {
   let bol = await axios.get ("https://www.bol.com/nl/p/xbox-series-x-console/9300000003688723/?promo=De+nieuwe+Xbox+Series+X_923_2_Bekijk+de+Xbox+Series+X+Console+productpagina")
   
   if (bol.data.search("Niet leverbaar") < 0) {
@@ -52,13 +47,13 @@ async function retrieveAvailabily( params:string ): Promise<IProductAvailability
   }
 }
 
-async function sendToEventbus( event:IProductAvailability ) {
+async function sendToEventbus( event:IProductAvailabilityEvent ) {
   const params = {
     Entries: [
       {
         Detail: JSON.stringify(event),
         EventBusName: process.env.EventbusName,
-        DetailType: "productAvailability",
+        DetailType: "ProductAvailabilityEvent",
         Source: "be.i8c.demo.bolcom",
       },
     ],
