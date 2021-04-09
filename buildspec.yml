@@ -26,3 +26,4 @@ artifacts:
   type: zip
   files:
     - template-export.yml
+    - env/prod-template-config.json
