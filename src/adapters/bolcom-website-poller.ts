@@ -41,7 +41,7 @@ async function retrieveAvailabily( params:string ): Promise<IProductAvailability
 
   } else {
     return {
-      product: "xbox",
+      product: "xboxé",
       available: false
     }
   }

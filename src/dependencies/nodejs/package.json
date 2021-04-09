@@ -11,8 +11,5 @@
   "dependencies": {
     "axios": "^0.21.1",
     "uuid": "^8.3.2"
-  },
-  "devDependencies": {
-    "@aws-sdk/client-eventbridge": "^3.11.0"
   }
 }
