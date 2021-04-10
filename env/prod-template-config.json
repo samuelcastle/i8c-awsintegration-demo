@@ -1,6 +1,6 @@
 {
     "Parameters" : {
-      "MagnetoAccessToken" : "TestEC2Key"
+      "EventbusName" : "i8c-wickey-orders"
     },
     "Tags" : {
       "Department" : "Marketing"
