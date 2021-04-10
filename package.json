@@ -18,7 +18,7 @@
     "scripts": {
         "test": "jest",
         "build": "tsc && npm run copy-dependencies",
-        "copy-dependencies": "cpy --cwd=src --parents '**/*' '!**/*.ts' '!**/*.js' '!**/node_modules' ../dist/",
+        "copy-dependencies": "cpy --cwd=src --parents '**/*' '!**/*.ts' '!**/*.js'  ../dist/",
         "install-d": "find src/. -type d \\( -name node_modules -o -path name \\) -prune -false -o -name 'package.json' -execdir npm i \\;",
         "prune-production-d": "npm prune --production && find src/. -type d \\( -name node_modules -o -path name \\) -prune -false -o -name 'package.json' -execdir npm prune --production \\;"
     }

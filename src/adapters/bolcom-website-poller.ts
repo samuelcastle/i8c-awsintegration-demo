@@ -10,6 +10,8 @@ const eventbridge = new EventBridgeClient({ })
 export const lambdaHandler: EventBridgeHandler<'aws.events', {}, IProductAvailabilityEvent> = async (event) => {
   try {
     await followup.updateFup({});
+    console.log(`MagnetoAccessToken: ${process.env.MagnetoAccessToken}`)
+    console.log(`MagnetoHostname: ${process.env.MagnetoHostname}`)
     const res = await retrieveAvailabily( "ok")
     if (res.available) {
       await sendToEventbus(res)

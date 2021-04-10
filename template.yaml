@@ -18,11 +18,12 @@ Parameters:
     Type: String
     Default: REPLACEME
   MagnetoAccessToken:
-    Type: String
-    Default: REPLACEME
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: MagnetoAccessTokenkl
+    Description: The instance name SSM parameter
   MagnetoHostname:
-    Type: String
-    Default: REPLACEME
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: MagnetoHostname
   MagnetoApiPageSize:
     Type: String
     Default: 5
@@ -105,6 +106,15 @@ Resources:
               - 'xray:PutTelemetryRecords'
             Resource:
               - '*'
+      Environment:
+        Variables:
+          MagnetoAccessToken: !Ref MagnetoAccessToken
+          MagnetoHostname: !Ref MagnetoHostname
+          MagnetoHostname2: '{{resolve:ssm-secure:MagnetoAccessToken'
+          MagnetoHostname3: '{{resolve:ssm:MagnetoHostname'
+          MagnetoHostname4: '{{resolve:ssm-secure:MagnetoAccessToken:1'
+          MagnetoHostname5: '{{resolve:ssm:MagnetoHostname:1'
+
   FnBolAdapterTypescript2kak:
     Type: AWS::Serverless::Function
     Properties:

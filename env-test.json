@@ -1,5 +1,5 @@
 {
-  "FnScheduledMagnetoCustomersPoller":{
+  "FnAdapterBolcomWebsitePoller":{
     "MagnetoAccessToken": "pkp0d6nx8vzejofq26yx7s8m972fe8rf",
     "MagnetoHostname": "35.156.207.232",
     "MagnetoSystemIdentifier": "Magneto-test-001",
