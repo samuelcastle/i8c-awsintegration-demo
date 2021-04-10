@@ -19,7 +19,7 @@ Parameters:
     Default: REPLACEME
   MagnetoAccessToken:
     Type: AWS::SSM::Parameter::Value<String>
-    Default: MagnetoAccessTokenkl
+    Default: MagnetoAccessToken
     Description: The instance name SSM parameter
   MagnetoHostname:
     Type: AWS::SSM::Parameter::Value<String>
