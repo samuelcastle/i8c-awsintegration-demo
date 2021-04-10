@@ -110,9 +110,9 @@ Resources:
         Variables:
           MagnetoAccessToken: !Ref MagnetoAccessToken
           MagnetoHostname: !Ref MagnetoHostname
-          MagnetoHostname2: '{{resolve:ssm-secure:MagnetoAccessToken}}'
+          MagnetoHostname2: '{{resolve:ssm:MagnetoAccessToken}}'
           MagnetoHostname3: '{{resolve:ssm:MagnetoHostname}}'
-          MagnetoHostname4: '{{resolve:ssm-secure:MagnetoAccessToken:1}}'
+          MagnetoHostname4: '{{resolve:ssm:MagnetoAccessToken:1}}'
           MagnetoHostname5: '{{resolve:ssm:MagnetoHostname:1}}'
 
   FnBolAdapterTypescript2kak:
