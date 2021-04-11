@@ -1,0 +1,15 @@
+{  
+    "version": "0",  
+    "id": "56b89ab0-345b-4e2c-6641-651e33447349",  
+    "detail-type": "ProductAvailabilityEvent",  
+    "source": "be.i8c.demo.bolcom",  
+    "account": "128894441789",  
+    "time": "2021-02-27T01:26:50Z",  
+    "region": "eu-central-1",  
+    "resources": [],  
+    "detail": {    
+        "product": "some product name",
+        "available": true,
+        "message": "some message which indicaties availability to enduser" 
+    }
+}

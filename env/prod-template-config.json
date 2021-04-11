@@ -3,16 +3,9 @@
       "EventbusName" : "i8c-wickey-orders"
     },
     "Tags" : {
-      "Department" : "Marketing"
+      "Team" : "cloudnative",
+      "Owner" : "vandes16"
     },
     "StackPolicy" : {
-      "Statement" : [
-        {
-          "Effect" : "Allow",
-          "NotAction" : "Update:Delete",
-          "Principal": "*",
-          "Resource" : "*"
-        }
-      ]
     }
   }

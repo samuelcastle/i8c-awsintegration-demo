@@ -27,6 +27,12 @@ Parameters:
   MagnetoApiPageSize:
     Type: String
     Default: 5
+  TelegramUrl:
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: TelegramUrl
+  TelegramChatId:
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: TelegramChatId
   PollingPointerDynamoDbName:
     Type: String
     Default: REPLACEME
@@ -108,23 +114,26 @@ Resources:
               - '*'
       Environment:
         Variables:
+          EventbusName: !Ref EventbusName
           MagnetoAccessToken: !Ref MagnetoAccessToken
           MagnetoHostname: !Ref MagnetoHostname
           MagnetoHostname2: '{{resolve:ssm:MagnetoAccessToken}}'
-          MagnetoHostname3: '{{resolve:ssm:MagnetoHostname}}'
-          MagnetoHostname4: '{{resolve:ssm:MagnetoAccessToken:1}}'
           MagnetoHostname5: '{{resolve:ssm:MagnetoHostname:1}}'
 
-  FnBolAdapterTypescript2kak:
+  FnAvailabilitiesHandler:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: ada-test.lambdaHandler
-      CodeUri: dist/adapters
+      Handler: availabilities-handler.lambdaHandler
+      CodeUri: dist/handlers
       Events:
-        CloudWatchEvent:
-          Type: Schedule
+        EventbusEvent:
+          Type: EventBridgeRule
           Properties:
-            Schedule: cron(0/15 * * * ? *)
+            EventBusName: !Ref EventbusName
+            Pattern:
+                source:
+                  - be.i8c.demo.bolcom
+                  - be.i8c.demo.coolblue
       Policies:
           - Statement:
             - Effect: Allow
@@ -133,6 +142,11 @@ Resources:
                 - 'xray:PutTelemetryRecords'
               Resource:
                 - '*'
+      Environment:
+        Variables:
+          TelegramUrl: !Ref TelegramUrl
+          TelegramChatId: !Ref TelegramChatId
+
   FunctionLayer:
     Type: AWS::Serverless::LayerVersion
     Properties:

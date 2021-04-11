@@ -2,11 +2,41 @@
 
 ![diagram](./diagram.png)
 
-```bash
-sam local invoke FnAdapterBolcomWebsitePoller --event events/event-cloudwatch-event.json
+## Local development
 
+SAM Local testing:
+
+```bash
+sam local invoke FnAdapterBolcomWebsitePoller --event events/event-cloudwatch-event.json --env-vars env-test.json
+
+sam local invoke FnAvailabilitiesHandler --event events/eventbridge-availability-bolcom.json --env-vars env-test.json
+```
+
+Local build:
+
+```bash
+# npm install in sub dirs
+npm run install-d
+
+# Build and copy deps into /dist
+npm run build 
+
+# Create SAM build into .aws-sam
+sam build
 
 ```
+
+Development deploy:
+
+```bash
+sam deploy --config-env vandes16 --config-file samconfig-test.toml
+```
+
+## CI/CD setup
+
+
+
+## Archive
 
 This project contains source code and supporting files for a serverless application that you can deploy with the AWS Serverless Application Model (AWS SAM) command line interface (CLI). It includes the following files and folders:
 

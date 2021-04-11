@@ -10,6 +10,10 @@
     "FollowupESPassword": ""
     
   },
+  "FnAvailabilitiesHandler": {
+    "TelegramUrl": "https://api.telegram.org/bot1605251995:AAFHx1haS-jGmQpzqZxJNFZjOHbsVJ6aEnM/sendMessage",
+    "TelegramChatId": 1554947644
+  },
   "FnCustomerToMSTeamsHandler": {
     "MSTeamsWebhookUrl": "https://cronos.webhook.office.com/webhookb2/6991badf-a59b-4834-a02c-392c8ccd775b@49c3d703-3579-47bf-a888-7c913fbdced9/IncomingWebhook/efe67ef287234dc4ad5eef007d191e5e/f326b0c8-0111-4e5b-b938-f04a00f85e82",
     "FollowupESUrl": "https://search-i8c-wickey-monitoring-xeltrgw7sul2svhig44yo4jy2a.eu-central-1.es.amazonaws.com",

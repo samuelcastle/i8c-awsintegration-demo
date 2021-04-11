@@ -1,5 +1,5 @@
 {
-  "name": "adapters",
+  "name": "handlers",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -9,8 +9,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@aws-sdk/client-eventbridge": "^3.12.0",
-    "axios": "^0.21.1"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.75"

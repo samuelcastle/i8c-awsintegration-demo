@@ -10,13 +10,11 @@ const eventbridge = new EventBridgeClient({ })
 export const lambdaHandler: EventBridgeHandler<'aws.events', {}, IProductAvailabilityEvent> = async (event) => {
   try {
     await followup.updateFup({});
-    console.log(`MagnetoAccessToken: ${process.env.MagnetoAccessToken}`)
-    console.log(`MagnetoHostname: ${process.env.MagnetoHostname}`)
-    const res = await retrieveAvailabily( "ok")
-    if (res.available) {
+    const res = await retrieveAvailabily()
+    //if (res.available) {
       await sendToEventbus(res)
-    }
-    console.info("lambda ran successfull maal 3")
+      console.info(`successfully send to eventbus: ${process.env.EventbusName}`)
+    //}
 
     return res
 
@@ -27,7 +25,7 @@ export const lambdaHandler: EventBridgeHandler<'aws.events', {}, IProductAvailab
 
 }
 
-async function retrieveAvailabily( params:string ): Promise<IProductAvailabilityEvent> {
+async function retrieveAvailabily( ): Promise<IProductAvailabilityEvent> {
   let bol = await axios.get ("https://www.bol.com/nl/p/xbox-series-x-console/9300000003688723/?promo=De+nieuwe+Xbox+Series+X_923_2_Bekijk+de+Xbox+Series+X+Console+productpagina")
   
   if (bol.data.search("Niet leverbaar") < 0) {
@@ -43,8 +41,9 @@ async function retrieveAvailabily( params:string ): Promise<IProductAvailability
 
   } else {
     return {
-      product: "xboxé",
-      available: false
+      product: "xbox series x",
+      available: false,
+      message: "😔😔😔"
     }
   }
 }
@@ -61,5 +60,6 @@ async function sendToEventbus( event:IProductAvailabilityEvent ) {
     ],
   };
   
-  await eventbridge.send(new PutEventsCommand(params));
+  var res = await eventbridge.send(new PutEventsCommand(params));
+  console.info(JSON.stringify(res))
 }
