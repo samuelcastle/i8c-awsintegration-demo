@@ -7,6 +7,7 @@ phases:
       - npm --version
       - node --version
       - aws --version
+      - sam --version
       - npm install
   pre_build:
     commands:
