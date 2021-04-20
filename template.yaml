@@ -313,7 +313,7 @@ Resources:
                               "summary": "New customer on Magento",
                               "sections": [
                                   {
-                                  "activityTitle": "New customer registerd on Magento 🚀 ",
+                                  "activityTitle": "New customer registerd on Magento",
                                   "activitySubtitle": "Amazon Eventbridge demo",
                                   "facts": [
                                   {
@@ -387,6 +387,3 @@ Resources:
                                   - !GetAtt I8cMailchimpApiDestination.Arn
                                   - !GetAtt I8cMSTeamsApiDestination.Arn
                                   - !GetAtt I8cSalesforceApiDestination.Arn
-
-
-
