@@ -1,5 +1,6 @@
 {
     "Parameters" : {
+
       "EventbusName" : "i8c-wickey-customers",
       
       "MSTeamsWebhookUrl": "dev-MSTeamsWebhookUrl",
@@ -14,10 +15,10 @@
       
       "MailchimpMembersUrl": "https://us14.api.mailchimp.com/3.0/lists/230948/members",
       "MailchimpApiPassword": "e7beba7da55245d6da87a7a4752ae7f8-us14"
-
+    
     },
     "Tags" : {
-      "Environment": "Prod",
+      "Environment": "dev",
       "Project": "i8c-awsintegration-demo",
       "Team" : "cloudnative",
       "Owner" : "vandes16"

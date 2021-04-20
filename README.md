@@ -29,7 +29,9 @@ sam build
 Development deploy:
 
 ```bash
-sam deploy --config-env vandes16 --config-file samconfig-test.toml
+aws cloudformation package --template template.yaml --s3-bucket aws-sam-cli-managed-default-samclisourcebucket-4n7uhuyscjya --output-template template-export.yml 
+aws cloudformation deploy --parameter-overrides file://env/dev-template-config.json --template-file template-export.yml --stack-name my-new-test --capabilities CAPABILITY_NAMED_IAM
+
 ```
 
 ## CI/CD setup

@@ -31,6 +31,7 @@ Parameters:
         Type: String
         Default: https://i8c2-dev-ed.my.salesforce.com/services/data/v50.0/sobjects/Contact/
     
+    
     CustomerEventBusName:
         Type: String
         Default: i8c-wickey-customers
